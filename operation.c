@@ -19,7 +19,7 @@ static t_op_func opArray[NUMBER_OF_OPERATION] = {
     &op_div
 };
 
-char const *getOpName(t_op_func func) {
+char const *op_getName(t_op_func func) {
     int i = 0;
     while (opArray[i] != func && i < NUMBER_OF_OPERATION) {
         ++i;
@@ -27,7 +27,7 @@ char const *getOpName(t_op_func func) {
     return opNames[i]; // if overflow return UNKNOWN
 }
 
-char getOpSym(t_op_func func) {
+char op_getSym(t_op_func func) {
     int i = 0;
     while (opArray[i] != func && i < NUMBER_OF_OPERATION) {
         ++i;
@@ -35,7 +35,7 @@ char getOpSym(t_op_func func) {
     return opSym[i]; // if overflow return UNKNOWN
 }
 
-t_op_func getRandomOp() {
+t_op_func op_pickRandom() {
     return opArray[rand() % NUMBER_OF_OPERATION];
 }
 

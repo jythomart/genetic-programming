@@ -26,7 +26,7 @@ static void generateEdge(t_edge *edge, int nbFeatures, unsigned int height) {
 
 static t_node *generateNode(int nbFeatures, unsigned int height) {
     t_node *node = node_create();
-    node->op = getRandomOp();
+    node->op = op_pickRandom();
     generateEdge(&node->left, nbFeatures, height);
     generateEdge(&node->right, nbFeatures, height);
 

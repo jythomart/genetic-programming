@@ -27,7 +27,7 @@ void    node_toJSON(t_node const *this, FILE *buffer) {
     // TODO
     fprintf(buffer, "(");
     edge_toJSON(&this->left, buffer);
-    fprintf(buffer, " %c ", getOpSym(this->op));
+    fprintf(buffer, " %c ", op_getSym(this->op));
     edge_toJSON(&this->right, buffer);
     fprintf(buffer, ")");
 }
