@@ -11,6 +11,7 @@ static char const *opNames[NUMBER_OF_OPERATION + 1] = {
     "div",
     "UNKNOWN"
 };
+static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/0";
 static t_op_func opArray[NUMBER_OF_OPERATION] = {
     &op_add,
     &op_sub,
@@ -24,6 +25,14 @@ char const *getOpName(t_op_func func) {
         ++i;
     }
     return opNames[i]; // if overflow return UNKNOWN
+}
+
+char getOpSym(t_op_func func) {
+    int i = 0;
+    while (opArray[i] != func && i < NUMBER_OF_OPERATION) {
+        ++i;
+    }
+    return opSym[i]; // if overflow return UNKNOWN
 }
 
 t_op_func getRandomOp() {

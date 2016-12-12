@@ -32,21 +32,18 @@ void test(FILE *logFile) {
   };
 
   t_node *root = generateTree(21);
-  debugToJSON(logFile, root);
-  printf("Test result = %f\n", applyDFS(features, root));
+  node_toJSON(root, logFile);
+  printf("Test result = %f\n", node_getValue(root, features));
 }
 
 int main(int argc, char **argv) {
   srand(time(NULL));
   int i;
   FILE *logFile = fopen("./debug.json", "w");
-  fprintf(logFile, "[\n");
   for (i = 0; i < 100; ++i) {
     test(logFile);
-    if (i != 99)
-      fprintf(logFile, ",");
+    fprintf(logFile, "\n");
   }
-  fprintf(logFile, "]\n");
   fclose(logFile);
   return 0;
 }

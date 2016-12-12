@@ -7,6 +7,7 @@
 typedef float(*t_op_func)(float, float);
 
 char const *getOpName(t_op_func func);
+char getOpSym(t_op_func func);
 t_op_func getRandomOp();
 
 float op_add(float left, float right);
