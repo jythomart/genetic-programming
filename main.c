@@ -5,9 +5,15 @@
 #include "node.h"
 #include "operation.h"
 #include "tree_generator.h"
+#include "population.h"
+#include <math.h>
+
+float computeScore(float expected, float actual) {
+  return fabsf(expected - actual);
+}
 
 void test(FILE *logFile) {
-  float features[21] = {
+  float features[22] = {
     0.919013169504469,
     0.175979075128653,
     0.10135850159251,
@@ -28,22 +34,46 @@ void test(FILE *logFile) {
     0.4061376325687,
     0.372771556780623,
     0.112987600494221,
-    0.65669198265475
+    0.65669198265475,
+    1.0
   };
 
-  t_node *root = generateTree(21);
-  node_toJSON(root, logFile);
-  printf("Test result = %f\n", node_getValue(root, features));
+  float const *featuresPtr[4] = {
+    features,
+    features,
+    features,
+    features
+  };
+
+  t_population *pop = population_create(100, 20, 60, 20, 21);
+  population_contest(pop, featuresPtr, 4, 21, &computeScore);
+  population_orderByScore(pop);
+
+  // t_node *root = tree_generate(21);
+  // t_node *copy = tree_generate(21);
+  // node_toJSON(root, stdout);
+  // fprintf(stdout, "\n");
+  // node_toJSON(copy, stdout);
+  // fprintf(stdout, "\n");
+  // t_node *child = tree_crossover(root, copy);
+  // fprintf(stdout, "\n");
+  // node_toJSON(child, stdout);
+  // fprintf(stdout, "\n");
+  // node_toJSON(root, logFile);
+  // node_getValue(root, features);
+  // // printf("Test result = %f\n", node_getValue(root, features));
+  // node_delete(&root);
+  // node_delete(&copy);
 }
 
 int main(int argc, char **argv) {
   srand(time(NULL));
-  int i;
+  // srand(23);
   FILE *logFile = fopen("./debug.json", "w");
-  for (i = 0; i < 100; ++i) {
+  // for (i = 0; i < 100; ++i) {
     test(logFile);
-    fprintf(logFile, "\n");
-  }
+    // fprintf(logFile, "\n");
+  // }
   fclose(logFile);
   return 0;
 }

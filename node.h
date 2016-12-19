@@ -18,6 +18,7 @@ typedef struct s_node {
 
 t_node  *node_create();
 void    node_delete(t_node **this);
+t_node  *node_duplicate(t_node const *this);
 
 float   node_getValue(t_node *this, float const *features);
 void    node_toJSON(t_node const *this, FILE *buffer);
