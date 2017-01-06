@@ -8,6 +8,7 @@
 #include "operation.h"
 #include "tree_generator.h"
 #include "population.h"
+#include "feature_parser.h"
 
 float computeScore(float expected, float actual) {
   return fabsf(expected - actual);
@@ -47,9 +48,11 @@ void test(FILE *logFile) {
   // };
 
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
-  float const **featuresPtr = (float const **)test_cubicXYZ(100);
+  // float const **featuresPtr = (float const **)test_cubicXYZ(100);
+  FILE *datasetFile = fopen("./datasets.csv", "r");
+  float const **featuresPtr = (float const **)feature_fromFile(datasetFile, 100, 21);
 
-  t_population *pop = population_create(10, 690, 300, 4);
+  t_population *pop = population_create(10, 690, 300, 21);
   pop->results[0] = 1;
   // population_contest(pop, featuresPtr, 100, 4, &computeScore);
   // population_orderByScore(pop);
@@ -57,10 +60,10 @@ void test(FILE *logFile) {
   int generation = 0;
   
   while (pop->results[0] > 0.00001) {
-    population_contest(pop, featuresPtr, 100, 4, &computeScore);
+    population_contest(pop, featuresPtr, 100, 21, &computeScore);
     population_orderByScore(pop);
-    population_increment(pop, 4);
-    population_mutate(pop, 10, 4);
+    population_increment(pop, 21);
+    population_mutate(pop, 10, 21);
     ++generation;
     if (generation % 100 == 0) {
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
@@ -74,6 +77,8 @@ void test(FILE *logFile) {
   fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
   fprintf(stdout, "result found after %i generations\n", generation);
   population_print(pop);
+
+  fclose(datasetFile);
   
 
   // t_node *root = tree_generate(21);

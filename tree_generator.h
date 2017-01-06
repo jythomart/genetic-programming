@@ -3,7 +3,7 @@
 
 # include "node.h"
 
-# define MAX_TREE_HEIGHT 5
+# define MAX_TREE_HEIGHT 25
 # define CONSTANT_CHANCE_PERCENTAGE 5
 # define CONSTANT_RANGE 15.0
 
