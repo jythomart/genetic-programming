@@ -2,52 +2,79 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <time.h>
+#include <math.h>
+#include "test.h"
 #include "node.h"
 #include "operation.h"
 #include "tree_generator.h"
 #include "population.h"
-#include <math.h>
 
 float computeScore(float expected, float actual) {
   return fabsf(expected - actual);
 }
 
 void test(FILE *logFile) {
-  float features[22] = {
-    0.919013169504469,
-    0.175979075128653,
-    0.10135850159251,
-    0.666597541086836,
-    0.580599131401996,
-    0.921770864359415,
-    0.38959978404349,
-    0.48172527594393,
-    0.0249343165510615,
-    0.90927849667423,
-    0.743939251587636,
-    0.0481614143534195,
-    0.604953709134513,
-    0.25949453653137,
-    0.761187626490504,
-    0.92258608236257,
-    0.615988823047026,
-    0.4061376325687,
-    0.372771556780623,
-    0.112987600494221,
-    0.65669198265475,
-    1.0
-  };
+  // float features[22] = {
+  //   0.919013169504469,
+  //   0.175979075128653,
+  //   0.10135850159251,
+  //   0.666597541086836,
+  //   0.580599131401996,
+  //   0.921770864359415,
+  //   0.38959978404349,
+  //   0.48172527594393,
+  //   0.0249343165510615,
+  //   0.90927849667423,
+  //   0.743939251587636,
+  //   0.0481614143534195,
+  //   0.604953709134513,
+  //   0.25949453653137,
+  //   0.761187626490504,
+  //   0.92258608236257,
+  //   0.615988823047026,
+  //   0.4061376325687,
+  //   0.372771556780623,
+  //   0.112987600494221,
+  //   0.65669198265475,
+  //   1.0
+  // };
 
-  float const *featuresPtr[4] = {
-    features,
-    features,
-    features,
-    features
-  };
+  // float const *featuresPtr[4] = {
+  //   features,
+  //   features,
+  //   features,
+  //   features
+  // };
 
-  t_population *pop = population_create(100, 20, 60, 20, 21);
-  population_contest(pop, featuresPtr, 4, 21, &computeScore);
-  population_orderByScore(pop);
+  // float const **featuresPtr = (float const **)test_sphereVolume(100);
+  float const **featuresPtr = (float const **)test_cubicXYZ(100);
+
+  t_population *pop = population_create(10, 690, 300, 4);
+  pop->results[0] = 1;
+  // population_contest(pop, featuresPtr, 100, 4, &computeScore);
+  // population_orderByScore(pop);
+
+  int generation = 0;
+  
+  while (pop->results[0] > 0.00001) {
+    population_contest(pop, featuresPtr, 100, 4, &computeScore);
+    population_orderByScore(pop);
+    population_increment(pop, 4);
+    population_mutate(pop, 10, 4);
+    ++generation;
+    if (generation % 100 == 0) {
+      fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
+      fprintf(stdout, "result found after %i generations\n", generation);
+      population_print(pop);
+    }
+  }
+
+  fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
+  fprintf(stdout, "FINAL RESULT !!!\n");
+  fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
+  fprintf(stdout, "result found after %i generations\n", generation);
+  population_print(pop);
+  
 
   // t_node *root = tree_generate(21);
   // t_node *copy = tree_generate(21);

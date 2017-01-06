@@ -20,6 +20,7 @@ t_node  *node_create();
 void    node_delete(t_node **this);
 t_node  *node_duplicate(t_node const *this);
 
+t_node  *node_pickRandom(t_node *this);
 float   node_getValue(t_node *this, float const *features);
 void    node_toJSON(t_node const *this, FILE *buffer);
 

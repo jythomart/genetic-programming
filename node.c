@@ -37,6 +37,28 @@ t_node  *node_duplicate(t_node const *this) {
     return copy;
 }
 
+static void  node_pickRandomRecursive(t_node *this, t_node **picked, int index) {
+    // first pick or not
+    if (rand() % index == 0) {
+        *picked = this;
+    }
+
+    if (this->left.type == EDGE_NODE) {
+        ++index;
+        node_pickRandomRecursive(this->left.target.node, picked, index);
+    }
+    if (this->right.type == EDGE_NODE) {
+        ++index;
+        node_pickRandomRecursive(this->right.target.node, picked, index);
+    }
+}
+
+t_node  *node_pickRandom(t_node *this) {
+    t_node **picked = &this;
+    node_pickRandomRecursive(this, picked, 2);
+    return (*picked);
+}
+
 float   node_getValue(t_node *this, float const *features) {
     float result = (*this->op)(edge_getValue(&this->left, features), edge_getValue(&this->right, features));
     this->result = result;
