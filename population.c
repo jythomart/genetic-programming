@@ -50,7 +50,7 @@ void            population_contest(t_population *this, float const **featureSets
         for (int j = 0; j < nbSets; ++j) {
             this->results[i] += (*scoreFunc)(featureSets[j][nbFeatures], node_getValue(this->candidates[i], featureSets[j]));
         }
-        this->results[i] = this->results[i] / (float) nbSets;
+        this->results[i] = -this->results[i] / (float) nbSets;
         if (isnan(this->results[i]))
             this->results[i] = 99999.0;
     }

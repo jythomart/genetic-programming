@@ -9,9 +9,14 @@
 #include "tree_generator.h"
 #include "population.h"
 #include "feature_parser.h"
+#include <sys/time.h>
 
-float computeScore(float expected, float actual) {
-  return fabsf(expected - actual);
+float computeScore(float actual, float predicted) {
+  return fabsf(actual - predicted);
+}
+
+float logLoss(float actual, float predicted) {
+  return actual * logf(predicted) + (1 - actual) * logf(1 - predicted);
 }
 
 void test(FILE *logFile) {
@@ -47,29 +52,60 @@ void test(FILE *logFile) {
   //   features
   // };
 
+  int nbSamples = 10000;
+  int nbFeatures = 50;
+
+  int nbElites = 10;
+  int nbCrossover = 490;
+  int nbNewcomer = 500;
+  int nbMutate = 50;
+
+  struct timeval stop, start;
+
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
-  FILE *datasetFile = fopen("./datasets.csv", "r");
-  float const **featuresPtr = (float const **)feature_fromFile(datasetFile, 100, 21);
 
-  t_population *pop = population_create(10, 690, 300, 21);
+  gettimeofday(&start, NULL);
+  FILE *datasetFile = fopen("./datasets.csv", "r");
+  float const **featuresPtr = (float const **)feature_fromFile(datasetFile, nbSamples, nbFeatures);
+  gettimeofday(&stop, NULL);
+  printf("took %lu to parse features\n", stop.tv_usec - start.tv_usec);
+
+  gettimeofday(&start, NULL);
+  t_population *pop = population_create(nbElites, nbCrossover, nbNewcomer, nbFeatures);
   pop->results[0] = 1;
-  // population_contest(pop, featuresPtr, 100, 4, &computeScore);
-  // population_orderByScore(pop);
+  gettimeofday(&stop, NULL);
+  printf("took %lu to create population\n", stop.tv_usec - start.tv_usec);
 
   int generation = 0;
   
-  while (pop->results[0] > 0.00001) {
-    population_contest(pop, featuresPtr, 100, 21, &computeScore);
+  while (pop->results[0] > 0.0001) {
+    gettimeofday(&start, NULL);
+    population_contest(pop, featuresPtr, nbSamples, nbFeatures, &logLoss);
+    gettimeofday(&stop, NULL);
+    printf("took %lu to contest\n", stop.tv_usec - start.tv_usec);
+
+    gettimeofday(&start, NULL);
     population_orderByScore(pop);
-    population_increment(pop, 21);
-    population_mutate(pop, 10, 21);
-    ++generation;
+    gettimeofday(&stop, NULL);
+    printf("took %lu to order by score\n", stop.tv_usec - start.tv_usec);
+
+    gettimeofday(&start, NULL);
+    population_increment(pop, nbFeatures);
+    gettimeofday(&stop, NULL);
+    printf("took %lu to increment population\n", stop.tv_usec - start.tv_usec);
+
+    gettimeofday(&start, NULL);
+    population_mutate(pop, nbMutate, nbFeatures);
+    gettimeofday(&stop, NULL);
+    printf("took %lu to mutate population\n----------------\n", stop.tv_usec - start.tv_usec);
+    
     if (generation % 100 == 0) {
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
       fprintf(stdout, "result found after %i generations\n", generation);
       population_print(pop);
     }
+    ++generation;
   }
 
   fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
