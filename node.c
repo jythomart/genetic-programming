@@ -72,3 +72,14 @@ void    node_toJSON(t_node const *this, FILE *buffer) {
     edge_toJSON(&this->right, buffer);
     fprintf(buffer, ")");
 }
+
+
+int     node_cmp(t_node const *this, t_node const *other) {
+    int diff = 0;
+    if (this->op != other->op) // add one divergence if operator is different
+        ++diff;
+    diff += edge_cmp(&this->left, &other->left);
+    diff += edge_cmp(&this->right, &other->right);
+
+    return diff;
+}

@@ -24,4 +24,6 @@ typedef struct s_edge {
 float   edge_getValue(t_edge const *this, float const *features);
 void    edge_toJSON(t_edge const *this, FILE *buffer);
 
+int     edge_cmp(t_edge const *this, t_edge const *other);
+
 #endif //__EDGE_H__

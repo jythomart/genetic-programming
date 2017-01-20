@@ -3,6 +3,9 @@
 #include "node.h"
 
 float edge_getValue(t_edge const *this, float const *features) {
+    if (this == NULL) // for unary operators
+        return 0.f;
+
     if (this->type == EDGE_FEATURE) {
         return features[this->target.featureIdx];
     }
@@ -24,4 +27,16 @@ void    edge_toJSON(t_edge const *this, FILE *buffer) {
     else { // EDGE_CONSTANT
         fprintf(buffer, "%f", this->target.constant);
     }
+}
+
+int     edge_cmp(t_edge const *this, t_edge const *other) {
+    int diff = 0;
+    if (this->type != other->type) {
+        ++diff;
+    }
+    else if (this->type == EDGE_NODE) { // both are EDGE_NODE
+        diff += node_cmp(this->target.node, other->target.node);
+    }
+
+    return diff;
 }
