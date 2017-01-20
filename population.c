@@ -110,7 +110,7 @@ void            population_increment(t_population *this, int nbFeatures) {
     int j = 0;
     float lastResult = -1.0;
     while (idx < this->eliteSize && j < this->size) {
-        if (j == 0 || this->results[j] > lastResult) { // maybe compare node by node instead of just the result?
+        if (j == 0 || node_cmp(this->swapBuffer[idx - 1], this->candidates[j]) > 3) {
             this->swapBuffer[idx] = node_duplicate(this->candidates[j]);
             ++idx;
             lastResult = this->results[j];
@@ -153,9 +153,9 @@ void            population_increment(t_population *this, int nbFeatures) {
 }
 
 void            population_mutate(t_population *this, unsigned int mutants, int nbFeatures) {
-    unsigned int idxRange = this->eliteSize + this->crossoverSize;
+    unsigned int idxRange = this->eliteSize + this->crossoverSize - 1;
     for (int i = 0; i < mutants; ++i) {
-        unsigned int mutantIdx = rand() % idxRange;
+        unsigned int mutantIdx = rand() % idxRange + 1; // top element cannot mutate
         tree_mutateOne(this->candidates[mutantIdx], nbFeatures);
     }
 }

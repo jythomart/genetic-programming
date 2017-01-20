@@ -52,7 +52,7 @@ void test(FILE *logFile) {
   //   features
   // };
 
-  int nbSamples = 10000;
+  int nbSamples = 50;
   int nbFeatures = 50;
 
   int nbElites = 10;
@@ -65,40 +65,22 @@ void test(FILE *logFile) {
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
 
-  gettimeofday(&start, NULL);
   FILE *datasetFile = fopen("./datasets.csv", "r");
   float const **featuresPtr = (float const **)feature_fromFile(datasetFile, nbSamples, nbFeatures);
-  gettimeofday(&stop, NULL);
-  printf("took %lu to parse features\n", stop.tv_usec - start.tv_usec);
 
-  gettimeofday(&start, NULL);
   t_population *pop = population_create(nbElites, nbCrossover, nbNewcomer, nbFeatures);
   pop->results[0] = 1;
-  gettimeofday(&stop, NULL);
-  printf("took %lu to create population\n", stop.tv_usec - start.tv_usec);
 
   int generation = 0;
   
   while (pop->results[0] > 0.0001) {
-    gettimeofday(&start, NULL);
     population_contest(pop, featuresPtr, nbSamples, nbFeatures, &logLoss);
-    gettimeofday(&stop, NULL);
-    printf("took %lu to contest\n", stop.tv_usec - start.tv_usec);
 
-    gettimeofday(&start, NULL);
     population_orderByScore(pop);
-    gettimeofday(&stop, NULL);
-    printf("took %lu to order by score\n", stop.tv_usec - start.tv_usec);
 
-    gettimeofday(&start, NULL);
     population_increment(pop, nbFeatures);
-    gettimeofday(&stop, NULL);
-    printf("took %lu to increment population\n", stop.tv_usec - start.tv_usec);
 
-    gettimeofday(&start, NULL);
     population_mutate(pop, nbMutate, nbFeatures);
-    gettimeofday(&stop, NULL);
-    printf("took %lu to mutate population\n----------------\n", stop.tv_usec - start.tv_usec);
     
     if (generation % 100 == 0) {
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");

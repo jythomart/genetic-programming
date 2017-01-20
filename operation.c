@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "operation.h"
 
@@ -9,14 +10,18 @@ static char const *opNames[NUMBER_OF_OPERATION + 1] = {
     "sub",
     "mul",
     "div",
+    "cos",
+    "sin"
     "UNKNOWN"
 };
-static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/0";
+static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/cs0";
 static t_op_func opArray[NUMBER_OF_OPERATION] = {
     &op_add,
     &op_sub,
     &op_mul,
-    &op_div
+    &op_div,
+    &op_cos,
+    &op_sin
 };
 
 char const *op_getName(t_op_func func) {
@@ -61,4 +66,12 @@ float op_mod(float left, float right) {
     if (right >= DIV_BY_O_THRESHOLD && right <= DIV_BY_O_THRESHOLD)
         return 0.0;
     return ((int) left) % ((int) right);
+}
+
+float op_cos(float left, float right) {
+    return left * cosf(right);
+}
+
+float op_sin(float left, float right) {
+    return left * sinf(right);
 }

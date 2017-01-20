@@ -1,3 +1,7 @@
 .vscode
 a.out
 debug.json
+datasets.csv
+datasets_backup.csv
+js/numerai_tournament_data.csv
+js/predictions*.csv

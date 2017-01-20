@@ -2,7 +2,7 @@
 # define __OPERATION_H__
 
 # define DIV_BY_O_THRESHOLD 0.001
-# define NUMBER_OF_OPERATION 4
+# define NUMBER_OF_OPERATION 6
 
 typedef float(*t_op_func)(float, float);
 
@@ -16,5 +16,8 @@ float op_mul(float left, float right);
 float op_div(float left, float right);
 float op_mod(float left, float right);
 // float op_mod(int left, int right);
+
+float op_cos(float left, float right);
+float op_sin(float left, float right);
 
 #endif // __OPERATION_H__
