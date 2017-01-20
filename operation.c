@@ -11,17 +11,21 @@ static char const *opNames[NUMBER_OF_OPERATION + 1] = {
     "mul",
     "div",
     "cos",
-    "sin"
+    "sin",
+    "min",
+    "max"
     "UNKNOWN"
 };
-static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/cs0";
+static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/csmM0";
 static t_op_func opArray[NUMBER_OF_OPERATION] = {
     &op_add,
     &op_sub,
     &op_mul,
     &op_div,
     &op_cos,
-    &op_sin
+    &op_sin,
+    &op_min,
+    &op_max
 };
 
 char const *op_getName(t_op_func func) {
@@ -74,4 +78,12 @@ float op_cos(float left, float right) {
 
 float op_sin(float left, float right) {
     return left * sinf(right);
+}
+
+float op_min(float left, float right) {
+    return left < right ? left : right;
+}
+
+float op_max(float left, float right) {
+    return left > right ? left : right;
 }
