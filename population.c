@@ -32,13 +32,13 @@ void            population_print(t_population *this) {
     }
     // fprintf(stdout, "--- CROSSOVER:\n");
     // for (int i = 0; i < this->crossoverSize; ++i) {
-    //     node_toJSON(this->candidates[idx], stdout);
+    //     node_toSymbols(this->candidates[idx], stdout);
     //     fprintf(stdout, " = %f\n", this->results[idx]);
     //     ++idx;
     // }
     // fprintf(stdout, "--- NEWCOMER:\n");
     // for (int i = 0; i < this->newcomerSize; ++i) {
-    //     node_toJSON(this->candidates[idx], stdout);
+    //     node_toSymbols(this->candidates[idx], stdout);
     //     fprintf(stdout, " = %f\n", this->results[idx]);
     //     ++idx;
     // }

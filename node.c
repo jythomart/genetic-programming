@@ -65,11 +65,11 @@ float   node_getValue(t_node *this, float const *features) {
     return result;
 }
 
-void    node_toJSON(t_node const *this, FILE *buffer) {
+void    node_toSymbols(t_node const *this, FILE *buffer) {
     fprintf(buffer, "(");
-    edge_toJSON(&this->left, buffer);
+    edge_toSymbols(&this->left, buffer);
     fprintf(buffer, " %c ", op_getSym(this->op));
-    edge_toJSON(&this->right, buffer);
+    edge_toSymbols(&this->right, buffer);
     fprintf(buffer, ")");
 }
 

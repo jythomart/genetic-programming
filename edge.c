@@ -3,8 +3,8 @@
 #include "node.h"
 
 float edge_getValue(t_edge const *this, float const *features) {
-    if (this == NULL) // for unary operators
-        return 0.f;
+    // if (this == NULL) // for unary operators
+    //     return 0.f;
 
     if (this->type == EDGE_FEATURE) {
         return features[this->target.featureIdx];
@@ -17,12 +17,12 @@ float edge_getValue(t_edge const *this, float const *features) {
     }
 }
 
-void    edge_toJSON(t_edge const *this, FILE *buffer) {
+void    edge_toSymbols(t_edge const *this, FILE *buffer) {
     if (this->type == EDGE_FEATURE) {
        fprintf(buffer, "_%i", this->target.featureIdx);
     }
     else if (this->type == EDGE_NODE) {
-        return node_toJSON(this->target.node, buffer);
+        return node_toSymbols(this->target.node, buffer);
     }
     else { // EDGE_CONSTANT
         fprintf(buffer, "%f", this->target.constant);

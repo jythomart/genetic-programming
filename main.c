@@ -60,7 +60,7 @@ void test(FILE *logFile) {
   int nbNewcomer = 500;
   int nbMutate = 50;
 
-  struct timeval stop, start;
+  // struct timeval stop, start;
 
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
@@ -72,13 +72,16 @@ void test(FILE *logFile) {
   pop->results[0] = 1;
 
   int generation = 0;
+
+  clock_t start = clock();
+  clock_t end = clock();
   
   while (pop->results[0] > 0.0001) {
-    clock_t start = clock();
+    // clock_t start = clock();
     population_contest(pop, featuresPtr, nbSamples, nbFeatures, &logLoss);
-    clock_t end = clock();
-    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-    fprintf(stdout, "contest took %fs\n", seconds);
+    // clock_t end = clock();
+    // float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+    // fprintf(stdout, "contest took %fs\n", seconds);
 
     population_orderByScore(pop);
 
@@ -87,9 +90,13 @@ void test(FILE *logFile) {
     population_mutate(pop, nbMutate, nbFeatures);
     
     if (generation % 100 == 0) {
+      end = clock();
+      float seconds = (float)(end - start) / CLOCKS_PER_SEC;
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
+      fprintf(stdout, "contest took %fs\n", seconds);
       fprintf(stdout, "result found after %i generations\n", generation);
       population_print(pop);
+      start = clock();
     }
     ++generation;
   }
@@ -105,15 +112,15 @@ void test(FILE *logFile) {
 
   // t_node *root = tree_generate(21);
   // t_node *copy = tree_generate(21);
-  // node_toJSON(root, stdout);
+  // node_toSymbols(root, stdout);
   // fprintf(stdout, "\n");
-  // node_toJSON(copy, stdout);
+  // node_toSymbols(copy, stdout);
   // fprintf(stdout, "\n");
   // t_node *child = tree_crossover(root, copy);
   // fprintf(stdout, "\n");
-  // node_toJSON(child, stdout);
+  // node_toSymbols(child, stdout);
   // fprintf(stdout, "\n");
-  // node_toJSON(root, logFile);
+  // node_toSymbols(root, logFile);
   // node_getValue(root, features);
   // // printf("Test result = %f\n", node_getValue(root, features));
   // node_delete(&root);
