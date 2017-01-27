@@ -26,7 +26,7 @@ void            population_print(t_population *this) {
     int idx = 0;
     fprintf(stdout, "--- ELITES:\n");
     for (int i = 0; i < this->eliteSize; ++i) {
-        node_toJSON(this->candidates[idx], stdout);
+        node_print(this->candidates[idx], stdout);
         fprintf(stdout, " = %f\n", this->results[idx]);
         ++idx;
     }

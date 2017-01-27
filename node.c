@@ -73,6 +73,15 @@ void    node_toJSON(t_node const *this, FILE *buffer) {
     fprintf(buffer, ")");
 }
 
+void    node_print(t_node const *this, FILE *buffer) {
+    fprintf(buffer, "%s", op_getName(this->op));
+    fprintf(buffer, "(");
+    edge_print(&this->left, buffer);
+    fprintf(buffer, ", ");
+    edge_print(&this->right, buffer);
+    fprintf(buffer, ")");
+}
+
 
 int     node_cmp(t_node const *this, t_node const *other) {
     int diff = 0;

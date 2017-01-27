@@ -13,7 +13,7 @@ static char const *opNames[NUMBER_OF_OPERATION + 1] = {
     "cos",
     "sin",
     "min",
-    "max"
+    "max",
     "UNKNOWN"
 };
 static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/csmM0";

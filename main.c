@@ -52,7 +52,7 @@ void test(FILE *logFile) {
   //   features
   // };
 
-  int nbSamples = 50;
+  int nbSamples = 1000;
   int nbFeatures = 50;
 
   int nbElites = 10;
@@ -74,7 +74,11 @@ void test(FILE *logFile) {
   int generation = 0;
   
   while (pop->results[0] > 0.0001) {
+    clock_t start = clock();
     population_contest(pop, featuresPtr, nbSamples, nbFeatures, &logLoss);
+    clock_t end = clock();
+    float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+    fprintf(stdout, "contest took %fs\n", seconds);
 
     population_orderByScore(pop);
 

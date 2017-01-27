@@ -29,6 +29,18 @@ void    edge_toJSON(t_edge const *this, FILE *buffer) {
     }
 }
 
+void    edge_print(t_edge const *this, FILE *buffer) {
+    if (this->type == EDGE_FEATURE) {
+       fprintf(buffer, "_%i", this->target.featureIdx);
+    }
+    else if (this->type == EDGE_NODE) {
+        return node_print(this->target.node, buffer);
+    }
+    else { // EDGE_CONSTANT
+        fprintf(buffer, "%f", this->target.constant);
+    }
+}
+
 int     edge_cmp(t_edge const *this, t_edge const *other) {
     int diff = 0;
     if (this->type != other->type) {
