@@ -1,6 +1,15 @@
 #include <stdlib.h>
 #include <math.h>
+#include <pthread.h>    // TODO move to its own file
 #include "population.h"
+
+static float computeScore(float actual, float predicted) {
+  return fabsf(actual - predicted);
+}
+
+static float logLoss(float actual, float predicted) {
+  return actual * logf(predicted) + (1 - actual) * logf(1 - predicted);
+}
 
 t_population  *population_create(unsigned int elite, unsigned int crossover, unsigned int newcomer, int nbFeatures) {
     t_population *pop = malloc(sizeof(t_population));
@@ -44,16 +53,62 @@ void            population_print(t_population *this) {
     // }
 }
 
-void            population_contest(t_population *this, float const **featureSets, int nbSets, int nbFeatures, float(*scoreFunc)(float, float)) {
+void population_contest(t_population *this, float const **featureSets, int nbSets, int nbFeatures) {
     for (int i = 0; i < this->size; ++i) {
         this->results[i] = 0.0;
         for (int j = 0; j < nbSets; ++j) {
-            this->results[i] += (*scoreFunc)(featureSets[j][nbFeatures], node_getValue(this->candidates[i], featureSets[j]));
+            this->results[i] += logLoss(featureSets[j][nbFeatures], node_getValue(this->candidates[i], featureSets[j]));
         }
         this->results[i] = -this->results[i] / (float) nbSets;
         if (isnan(this->results[i]))
             this->results[i] = 99999.0;
     }
+}
+
+void population_partialContest(t_population *this, float const **featureSets, int nbSets, int nbFeatures, int start, int end) {
+    for (int i = start; i < end; ++i) {
+        this->results[i] = 0.0;
+        for (int j = 0; j < nbSets; ++j) {
+            this->results[i] += logLoss(featureSets[j][nbFeatures], node_getValue(this->candidates[i], featureSets[j]));
+        }
+        this->results[i] = -this->results[i] / (float) nbSets;
+        if (isnan(this->results[i]))
+            this->results[i] = 99999.0;
+    }
+}
+
+static void *population_threadWrapper(void *data) {
+    t_thread_contest *contestData = (t_thread_contest *) data;
+    population_partialContest(contestData->this, contestData->featureSets, contestData->nbSets, contestData->nbFeatures, contestData->start, contestData->end);
+    return 0;
+}
+
+void population_threadedContest(t_population *this, float const **featureSets, int nbSets, int nbFeatures, int nbThreads) {
+    pthread_t thread[nbThreads];
+    t_thread_contest **partials = malloc(sizeof(t_thread_contest *) * nbThreads);
+    int partialSet = this->size / nbThreads;
+    for (int i = 0; i < nbThreads; ++i) {
+        partials[i] = malloc(sizeof(t_thread_contest));
+        partials[i]->this = this;
+        partials[i]->featureSets = featureSets;
+        partials[i]->nbSets = nbSets;
+        partials[i]->nbFeatures = nbFeatures;
+        partials[i]->start = i * partialSet;
+        partials[i]->end = (i + 1) * partialSet;
+        // fprintf(stdout, "thread%i running from %i to %i\n", i, partials[i]->start, partials[i]->end);
+        pthread_create(&thread[i], NULL, population_threadWrapper, partials[i]);
+    }
+
+    population_partialContest(this, featureSets, nbSets, nbFeatures, this->size - this->size % nbThreads, this->size);
+
+    for (int i = 0; i < nbThreads; ++i) {
+      pthread_join(thread[i], NULL);
+    }
+
+    for (int i = 0; i < nbThreads; ++i) {
+        free(partials[i]);
+    }
+    free(partials);
 }
 
 static int     population_orderByScorePartition(t_population *this, int leftIdx, int rightIdx) {

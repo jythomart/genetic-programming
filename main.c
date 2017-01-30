@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <time.h>
+#include <sys/time.h>
 #include <math.h>
 #include "test.h"
 #include "node.h"
@@ -9,58 +10,25 @@
 #include "tree_generator.h"
 #include "population.h"
 #include "feature_parser.h"
-#include <sys/time.h>
 
-float computeScore(float actual, float predicted) {
-  return fabsf(actual - predicted);
-}
+typedef unsigned long long timestamp_t;
+static timestamp_t get_timestamp() {
+  struct timeval now;
+  gettimeofday (&now, NULL);
 
-float logLoss(float actual, float predicted) {
-  return actual * logf(predicted) + (1 - actual) * logf(1 - predicted);
+  return now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
 }
 
 void test(FILE *logFile) {
-  // float features[22] = {
-  //   0.919013169504469,
-  //   0.175979075128653,
-  //   0.10135850159251,
-  //   0.666597541086836,
-  //   0.580599131401996,
-  //   0.921770864359415,
-  //   0.38959978404349,
-  //   0.48172527594393,
-  //   0.0249343165510615,
-  //   0.90927849667423,
-  //   0.743939251587636,
-  //   0.0481614143534195,
-  //   0.604953709134513,
-  //   0.25949453653137,
-  //   0.761187626490504,
-  //   0.92258608236257,
-  //   0.615988823047026,
-  //   0.4061376325687,
-  //   0.372771556780623,
-  //   0.112987600494221,
-  //   0.65669198265475,
-  //   1.0
-  // };
+  int nbThreads = 31; // not including main thread
 
-  // float const *featuresPtr[4] = {
-  //   features,
-  //   features,
-  //   features,
-  //   features
-  // };
-
-  int nbSamples = 1000;
+  int nbSamples = 100000;
   int nbFeatures = 50;
 
   int nbElites = 10;
   int nbCrossover = 490;
   int nbNewcomer = 500;
   int nbMutate = 50;
-
-  // struct timeval stop, start;
 
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
@@ -73,12 +41,13 @@ void test(FILE *logFile) {
 
   int generation = 0;
 
-  clock_t start = clock();
-  clock_t end = clock();
+  timestamp_t start = get_timestamp();
+  timestamp_t end = get_timestamp();
   
   while (pop->results[0] > 0.0001) {
     // clock_t start = clock();
-    population_contest(pop, featuresPtr, nbSamples, nbFeatures, &logLoss);
+    population_threadedContest(pop, featuresPtr, nbSamples, nbFeatures, nbThreads);
+    // population_contest(pop, featuresPtr, nbSamples, nbFeatures);
     // clock_t end = clock();
     // float seconds = (float)(end - start) / CLOCKS_PER_SEC;
     // fprintf(stdout, "contest took %fs\n", seconds);
@@ -89,14 +58,14 @@ void test(FILE *logFile) {
 
     population_mutate(pop, nbMutate, nbFeatures);
     
-    if (generation % 100 == 0) {
-      end = clock();
-      float seconds = (float)(end - start) / CLOCKS_PER_SEC;
+    if (generation % 1 == 0) {
+      end = get_timestamp();
+      double seconds = (float)(end - start) / 1000000.0L;
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
-      fprintf(stdout, "contest took %fs\n", seconds);
+      fprintf(stdout, "contest took %.5f s\n", seconds);
       fprintf(stdout, "result found after %i generations\n", generation);
       population_print(pop);
-      start = clock();
+      start = get_timestamp();
     }
     ++generation;
   }
