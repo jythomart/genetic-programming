@@ -11,6 +11,7 @@ typedef char t_bool;
 
 typedef struct s_node {
     float result;
+    unsigned int speciesId;
     t_op_func op;
     t_edge left;
     t_edge right;

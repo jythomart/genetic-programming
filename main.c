@@ -20,15 +20,15 @@ static timestamp_t get_timestamp() {
 }
 
 void test(FILE *logFile) {
-  int nbThreads = 31; // not including main thread
+  int nbThreads = 3; // not including main thread
 
-  int nbSamples = 100000;
+  int nbSamples = 1000;
   int nbFeatures = 50;
 
-  int nbElites = 10;
-  int nbCrossover = 490;
-  int nbNewcomer = 500;
-  int nbMutate = 50;
+  int nbElites = 3;
+  int nbCrossover = 5;
+  int nbNewcomer = 2;
+  int nbMutate = 0;
 
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
@@ -52,16 +52,16 @@ void test(FILE *logFile) {
     // float seconds = (float)(end - start) / CLOCKS_PER_SEC;
     // fprintf(stdout, "contest took %fs\n", seconds);
 
+    population_assignSpecies(pop);
     population_orderByScore(pop);
-
     population_increment(pop, nbFeatures);
-
     population_mutate(pop, nbMutate, nbFeatures);
     
     if (generation % 1 == 0) {
       end = get_timestamp();
       double seconds = (float)(end - start) / 1000000.0L;
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
+      fprintf(stdout, "Species: %i\n", pop->nbSpecies);
       fprintf(stdout, "contest took %.5f s\n", seconds);
       fprintf(stdout, "result found after %i generations\n", generation);
       population_print(pop);

@@ -2,6 +2,7 @@
 # define __POPULATION_H__
 
 # include "node.h"
+# include "species.h"
 # include "tree_generator.h"
 
 # define POPULATION_SIZE 100
@@ -14,9 +15,11 @@ typedef struct s_population {
     unsigned int    eliteSize;
     unsigned int    crossoverSize;
     unsigned int    newcomerSize;
+    unsigned int    nbSpecies;
+    float           *results;
+    t_species       *species;
     t_node          **candidates;
     t_node          **swapBuffer;
-    float           *results;
 } t_population;
 
 typedef struct s_thread_contest {
@@ -40,5 +43,6 @@ void            population_threadedContest(t_population *this, float const **fea
 void            population_orderByScore(t_population *this);
 void            population_increment(t_population *this, int nbFeatures);
 void            population_mutate(t_population *this, unsigned int mutants, int nbFeatures);
+void            population_assignSpecies(t_population *this);
 
 #endif //__POPULATION_H__

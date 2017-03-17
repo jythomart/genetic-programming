@@ -3,9 +3,9 @@
 #include <pthread.h>    // TODO move to its own file
 #include "population.h"
 
-static float computeScore(float actual, float predicted) {
-  return fabsf(actual - predicted);
-}
+// static float computeScore(float actual, float predicted) {
+//   return fabsf(actual - predicted);
+// }
 
 static float logLoss(float actual, float predicted) {
   return actual * logf(predicted) + (1 - actual) * logf(1 - predicted);
@@ -17,9 +17,11 @@ t_population  *population_create(unsigned int elite, unsigned int crossover, uns
     pop->eliteSize = elite;
     pop->crossoverSize = crossover;
     pop->newcomerSize = newcomer;
+    pop->nbSpecies = 0;
 
     pop->candidates = malloc(pop->size * sizeof(t_node*));
     pop->swapBuffer = malloc(pop->size * sizeof(t_node*));
+    pop->species = malloc(pop->size * sizeof(t_species));
     pop->results = malloc(pop->size * sizeof(float));
     for (unsigned int i = 0; i < pop->size; ++i) {
         pop->candidates[i] = tree_generate(nbFeatures);
@@ -35,22 +37,25 @@ void            population_print(t_population *this) {
     int idx = 0;
     fprintf(stdout, "--- ELITES:\n");
     for (int i = 0; i < this->eliteSize; ++i) {
+        fprintf(stdout, "(Specie %i): ", this->candidates[idx]->speciesId);
         node_print(this->candidates[idx], stdout);
         fprintf(stdout, " = %f\n", this->results[idx]);
         ++idx;
     }
-    // fprintf(stdout, "--- CROSSOVER:\n");
-    // for (int i = 0; i < this->crossoverSize; ++i) {
-    //     node_toSymbols(this->candidates[idx], stdout);
-    //     fprintf(stdout, " = %f\n", this->results[idx]);
-    //     ++idx;
-    // }
-    // fprintf(stdout, "--- NEWCOMER:\n");
-    // for (int i = 0; i < this->newcomerSize; ++i) {
-    //     node_toSymbols(this->candidates[idx], stdout);
-    //     fprintf(stdout, " = %f\n", this->results[idx]);
-    //     ++idx;
-    // }
+    fprintf(stdout, "--- CROSSOVER:\n");
+    for (int i = 0; i < this->crossoverSize; ++i) {
+        fprintf(stdout, "(Specie %i): ", this->candidates[idx]->speciesId);
+        node_print(this->candidates[idx], stdout);
+        fprintf(stdout, " = %f\n", this->results[idx]);
+        ++idx;
+    }
+    fprintf(stdout, "--- NEWCOMER:\n");
+    for (int i = 0; i < this->newcomerSize; ++i) {
+        fprintf(stdout, "(Specie %i): ", this->candidates[idx]->speciesId);
+        node_print(this->candidates[idx], stdout);
+        fprintf(stdout, " = %f\n", this->results[idx]);
+        ++idx;
+    }
 }
 
 void population_contest(t_population *this, float const **featureSets, int nbSets, int nbFeatures) {
@@ -95,10 +100,11 @@ void population_threadedContest(t_population *this, float const **featureSets, i
         partials[i]->nbFeatures = nbFeatures;
         partials[i]->start = i * partialSet;
         partials[i]->end = (i + 1) * partialSet;
-        // fprintf(stdout, "thread%i running from %i to %i\n", i, partials[i]->start, partials[i]->end);
+        fprintf(stdout, "thread%i running from %i to %i\n", i, partials[i]->start, partials[i]->end);
         pthread_create(&thread[i], NULL, population_threadWrapper, partials[i]);
     }
 
+    fprintf(stdout, "main thread running from %i to %i\n", this->size - this->size % nbThreads, this->size);
     population_partialContest(this, featureSets, nbSets, nbFeatures, this->size - this->size % nbThreads, this->size);
 
     for (int i = 0; i < nbThreads; ++i) {
@@ -111,17 +117,30 @@ void population_threadedContest(t_population *this, float const **featureSets, i
     free(partials);
 }
 
-static int     population_orderByScorePartition(t_population *this, int leftIdx, int rightIdx) {
+static float      population_compareCandidates(t_population const *this, int i, int j) {
+    // fprintf(stdout, "population_compareCandidates %i and %i\n", i, j);
+    // if (this->candidates[i]->speciesId != this->candidates[j]->speciesId) {
+    //     return this->candidates[i]->speciesId - this->candidates[j]->speciesId;
+    // }
+    return this->results[i] - this->results[j];
+}
+
+static int     population_orderByScorePartition(t_population *this, int leftIdx, int rightIdx, float(*cmp_func)(t_population const *, int, int)) {
+    // fprintf(stdout, "population_orderByScorePartition %i and %i\n", leftIdx, rightIdx);
     int i = leftIdx;
     int j = rightIdx + 1;
     float tmp;
     t_node *tmpNode;
 
-    float pivot = this->results[leftIdx];
+    // float pivot = this->results[leftIdx];
 
     while(1) {
-        do ++i; while(this->results[i] <= pivot && i <= rightIdx);
-        do --j; while(this->results[j] > pivot);
+        do {
+            ++i;
+        } while(cmp_func(this, leftIdx, i) >= 0 && i < rightIdx); // this->results[i] <= pivot
+        do {
+            --j;
+        } while(cmp_func(this, leftIdx, j) < 0); // this->results[j] > pivot
         if (i >= j)
             break;
         // swap results
@@ -149,7 +168,7 @@ static void     population_orderByScoreQuickSort(t_population *this, int leftIdx
     int pivot;
 
     if (leftIdx < rightIdx) {
-        pivot = population_orderByScorePartition(this, leftIdx, rightIdx);
+        pivot = population_orderByScorePartition(this, leftIdx, rightIdx, &population_compareCandidates);
         population_orderByScoreQuickSort(this, leftIdx, pivot - 1);
         population_orderByScoreQuickSort(this, pivot + 1, rightIdx);
     }
@@ -165,11 +184,11 @@ void            population_increment(t_population *this, int nbFeatures) {
     int j = 0;
     float lastResult = -1.0;
     while (idx < this->eliteSize && j < this->size) {
-        if (j == 0 || node_cmp(this->swapBuffer[idx - 1], this->candidates[j]) > 3) {
+        // if (j == 0 || node_cmp(this->swapBuffer[idx - 1], this->candidates[j]) > 3) {
             this->swapBuffer[idx] = node_duplicate(this->candidates[j]);
             ++idx;
             lastResult = this->results[j];
-        }
+        // }
         ++j;
     }
     // printf("blabla %i\n", idx);
@@ -213,4 +232,31 @@ void            population_mutate(t_population *this, unsigned int mutants, int 
         unsigned int mutantIdx = rand() % idxRange + 1; // top element cannot mutate
         tree_mutateOne(this->candidates[mutantIdx], nbFeatures);
     }
+}
+
+static void population_assignSpeciesIndividual(t_population *this, int individualIdx) {
+    const int speciesThreshold = 3;
+    // go through every species
+    for (int j = 0; j < this->nbSpecies; ++j) {
+        int diff = node_cmp(this->swapBuffer[j], this->candidates[individualIdx]);
+        if (diff <= speciesThreshold) {
+            // existing species
+            this->candidates[individualIdx]->speciesId = this->swapBuffer[j]->speciesId;
+            return ;
+        }
+    }
+    this->candidates[individualIdx]->speciesId = this->nbSpecies;
+    this->swapBuffer[this->nbSpecies] = this->candidates[individualIdx];
+    this->nbSpecies += 1;
+}
+
+void population_assignSpecies(t_population *this) {
+    this->nbSpecies = 1;
+    this->candidates[0]->speciesId = 0;
+    this->swapBuffer[0] = this->candidates[0];
+
+    // go through every candidates
+    for (int i = 1; i < this->size; ++i) {
+        population_assignSpeciesIndividual(this, i);
+    };
 }
