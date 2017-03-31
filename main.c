@@ -25,10 +25,10 @@ void test(FILE *logFile) {
   int nbSamples = 1000;
   int nbFeatures = 50;
 
-  int nbElites = 3;
-  int nbCrossover = 5;
-  int nbNewcomer = 2;
-  int nbMutate = 0;
+  int nbElites = 100;
+  int nbCrossover = 600;
+  int nbNewcomer = 300;
+  int nbMutate = 50;
 
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
@@ -53,18 +53,21 @@ void test(FILE *logFile) {
     // fprintf(stdout, "contest took %fs\n", seconds);
 
     population_assignSpecies(pop);
+    // population_print(pop);
     population_orderByScore(pop);
+    population_computeSpecies(pop);
     population_increment(pop, nbFeatures);
     population_mutate(pop, nbMutate, nbFeatures);
     
-    if (generation % 1 == 0) {
+    if (generation % 1000 == 0) {
       end = get_timestamp();
       double seconds = (float)(end - start) / 1000000.0L;
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
       fprintf(stdout, "Species: %i\n", pop->nbSpecies);
       fprintf(stdout, "contest took %.5f s\n", seconds);
       fprintf(stdout, "result found after %i generations\n", generation);
-      population_print(pop);
+      population_speciatedPrint(pop);
+      // population_print(pop);
       start = get_timestamp();
     }
     ++generation;
@@ -74,6 +77,7 @@ void test(FILE *logFile) {
   fprintf(stdout, "FINAL RESULT !!!\n");
   fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
   fprintf(stdout, "result found after %i generations\n", generation);
+  // population_speciatedPrint(pop);
   population_print(pop);
 
   fclose(datasetFile);
@@ -97,8 +101,8 @@ void test(FILE *logFile) {
 }
 
 int main(int argc, char **argv) {
-  srand(time(NULL));
-  // srand(23);
+  // srand(time(NULL));
+  srand(42);
   FILE *logFile = fopen("./debug.json", "w");
   // for (i = 0; i < 100; ++i) {
     test(logFile);

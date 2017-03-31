@@ -8,6 +8,7 @@ typedef struct s_species {
     unsigned int    speciesId;
     unsigned int    startIdx;
     unsigned int    endIdx;
+    float           avgFitness;
 } t_species;
 
 #endif //__SPECIES_H__

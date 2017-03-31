@@ -35,6 +35,7 @@ t_population    *population_create(unsigned int elite, unsigned int crossover, u
 void            population_destroy(t_population *this);
 
 void            population_print(t_population *this);
+void            population_speciatedPrint(t_population *this);
 
 void            population_contest(t_population *this, float const **featureSets, int nbSets, int nbFeatures);
 void            population_partialContest(t_population *this, float const **featureSets, int nbSets, int nbFeatures, int start, int end);
@@ -44,5 +45,6 @@ void            population_orderByScore(t_population *this);
 void            population_increment(t_population *this, int nbFeatures);
 void            population_mutate(t_population *this, unsigned int mutants, int nbFeatures);
 void            population_assignSpecies(t_population *this);
+float           population_computeSpecies(t_population *this);
 
 #endif //__POPULATION_H__
