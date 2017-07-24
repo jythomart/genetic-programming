@@ -56,8 +56,6 @@ void test(FILE *logFile) {
     // population_print(pop);
     population_orderByScore(pop);
     population_computeSpecies(pop);
-    population_increment(pop, nbFeatures);
-    population_mutate(pop, nbMutate, nbFeatures);
     
     if (generation % 1000 == 0) {
       end = get_timestamp();
@@ -70,6 +68,10 @@ void test(FILE *logFile) {
       // population_print(pop);
       start = get_timestamp();
     }
+
+    population_increment(pop, nbFeatures);
+    population_mutate(pop, nbMutate, nbFeatures);
+
     ++generation;
   }
 
