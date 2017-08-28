@@ -8,7 +8,15 @@ static float computeScore(float actual, float predicted) {
 }
 
 static float logLoss(float actual, float predicted) {
-  return actual * logf(predicted) + (1 - actual) * logf(1 - predicted);
+    float eps = 1e-15;
+    if (predicted < eps)
+    predicted = eps;
+
+    if (predicted == 1)
+    predicted -= eps;
+
+    return - (actual * logf(predicted) + (1 - actual) * logf(1 - predicted));
+    // return actual * logf(predicted) + (1 - actual) * logf(1 - predicted);
 }
 
 t_population  *population_create(unsigned int elite, unsigned int crossover, unsigned int newcomer, int nbFeatures) {
@@ -59,7 +67,7 @@ void population_contest(t_population *this, float const **featureSets, int nbSet
         for (int j = 0; j < nbSets; ++j) {
             this->results[i] += logLoss(featureSets[j][nbFeatures], node_getValue(this->candidates[i], featureSets[j]));
         }
-        this->results[i] = -this->results[i] / (float) nbSets;
+        this->results[i] = this->results[i] / (float) nbSets;
         if (isnan(this->results[i]))
             this->results[i] = 99999.0;
     }
@@ -71,7 +79,7 @@ void population_partialContest(t_population *this, float const **featureSets, in
         for (int j = 0; j < nbSets; ++j) {
             this->results[i] += logLoss(featureSets[j][nbFeatures], node_getValue(this->candidates[i], featureSets[j]));
         }
-        this->results[i] = -this->results[i] / (float) nbSets;
+        this->results[i] = this->results[i] / (float) nbSets;
         if (isnan(this->results[i]))
             this->results[i] = 99999.0;
     }
