@@ -1,7 +1,10 @@
 .vscode
-a.out
+a.out*
 debug.json
 datasets.csv
 datasets_backup.csv
+numerai_training_data.csv
 js/numerai_tournament_data.csv
 js/predictions*.csv
+.DS_Store
+js/.DS_Store
