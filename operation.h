@@ -2,7 +2,8 @@
 # define __OPERATION_H__
 
 # define DIV_BY_O_THRESHOLD 0.001
-# define NUMBER_OF_OPERATION 8
+// # define NUMBER_OF_OPERATION 8
+# define NUMBER_OF_OPERATION 6
 
 typedef float(*t_op_func)(float, float);
 

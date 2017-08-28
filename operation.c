@@ -10,20 +10,21 @@ static char const *opNames[NUMBER_OF_OPERATION + 1] = {
     "sub",
     "mul",
     "div",
-    "cos",
-    "sin",
+    // "cos",
+    // "sin",
     "min",
     "max",
     "UNKNOWN"
 };
-static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/csmM0";
+// static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/csmM0";
+static char const opSym[NUMBER_OF_OPERATION + 1] = "+-*/mM0";
 static t_op_func opArray[NUMBER_OF_OPERATION] = {
     &op_add,
     &op_sub,
     &op_mul,
     &op_div,
-    &op_cos,
-    &op_sin,
+    // &op_cos,
+    // &op_sin,
     &op_min,
     &op_max
 };
