@@ -20,21 +20,22 @@ static timestamp_t get_timestamp() {
 }
 
 void test(FILE *logFile) {
-  int nbThreads = 31; // not including main thread
+  int nbThreads = 15; // not including main thread
 
-  int nbSamples = 100000;
-  int nbFeatures = 50;
+  int nbSamples = 108405;
+  int nbDiscard = 3;
+  int nbFeatures = 21;
 
-  int nbElites = 10;
-  int nbCrossover = 490;
-  int nbNewcomer = 500;
-  int nbMutate = 50;
+  int nbElites = 6;
+  int nbCrossover = 94;
+  int nbNewcomer = 100;
+  int nbMutate = 10;
 
   // float const **featuresPtr = (float const **)test_sphereVolume(100);
   // float const **featuresPtr = (float const **)test_cubicXYZ(100);
 
   FILE *datasetFile = fopen("./datasets.csv", "r");
-  float const **featuresPtr = (float const **)feature_fromFile(datasetFile, nbSamples, nbFeatures);
+  float const **featuresPtr = (float const **)feature_fromFile(datasetFile, nbDiscard, nbSamples, nbFeatures);
 
   t_population *pop = population_create(nbElites, nbCrossover, nbNewcomer, nbFeatures);
   pop->results[0] = 1;

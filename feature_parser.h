@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-float **feature_fromFile(FILE *featureFile, int nbSamples, int nbFeatures);
+float **feature_fromFile(FILE *featureFile, int nbDiscard, int nbSamples, int nbFeatures);
 
 #endif //__FEATURE_PARSER_H__
