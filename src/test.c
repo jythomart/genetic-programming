@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "test.h"
+#include "../include/test.h"
 
 float **test_sphereVolume(int nbFeatureSamples) {
     float **samples = malloc(nbFeatureSamples * sizeof(float *));

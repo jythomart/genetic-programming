@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "node.h"
+#include "../include/node.h"
 
 t_node  *node_create() {
     t_node *this = malloc(sizeof(t_node));

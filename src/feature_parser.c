@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include "feature_parser.h"
+#include "../include/feature_parser.h"
 
 // Warning: Does not check end of array
 static char *discardFeatures(char *buffer, int nbDiscard) {

@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <pthread.h>    // TODO move to its own file
-#include "population.h"
+#include "../include/population.h"
 
 static float computeScore(float actual, float predicted) {
   return fabsf(actual - predicted);

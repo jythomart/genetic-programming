@@ -4,12 +4,12 @@
 #include <time.h>
 #include <sys/time.h>
 #include <math.h>
-#include "test.h"
-#include "node.h"
-#include "operation.h"
-#include "tree_generator.h"
-#include "population.h"
-#include "feature_parser.h"
+#include "../include/test.h"
+#include "../include/node.h"
+#include "../include/operation.h"
+#include "../include/tree_generator.h"
+#include "../include/population.h"
+#include "../include/feature_parser.h"
 
 typedef unsigned long long timestamp_t;
 static timestamp_t get_timestamp() {

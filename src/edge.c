@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "edge.h"
-#include "node.h"
+#include "../include/edge.h"
+#include "../include/node.h"
 
 float edge_getValue(t_edge const *this, float const *features) {
     // if (this == NULL) // for unary operators

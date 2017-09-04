@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "operation.h"
+#include "../include/operation.h"
 
 // merge in one array ?
 static char const *opNames[NUMBER_OF_OPERATION + 1] = {

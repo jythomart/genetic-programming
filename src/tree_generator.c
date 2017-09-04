@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
-#include "tree_generator.h"
-#include "edge.h"
+#include "../include/tree_generator.h"
+#include "../include/edge.h"
 
 static void tree_generateEdge(t_edge *edge, int nbFeatures, unsigned int height);
 static t_node *tree_generateNode(int nbFeatures, unsigned int height);
