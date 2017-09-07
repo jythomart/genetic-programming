@@ -5,14 +5,14 @@ ODIR=obj
 LDIR =./lib
 
 CC=gcc
-CFLAGS=-I$(IDIR)
+CFLAGS=-I$(IDIR) -Wall -Werror
 
 LIBS=-lm -lpthread
 
-_DEPS = edge.h feature_parser.h node.h operation.h population.h test.h tree_generator.h
+_DEPS = edge.h feature_parser.h arg_helper.h node.h operation.h population.h test.h tree_generator.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o edge.o feature_parser.o node.o operation.o population.o test.o tree_generator.o
+_OBJ = main.o edge.o feature_parser.o arg_helper.o node.o operation.o population.o test.o tree_generator.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 _SRC = %.c

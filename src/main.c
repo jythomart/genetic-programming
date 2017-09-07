@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 #include <time.h>
 #include <sys/time.h>
@@ -10,16 +11,18 @@
 #include "../include/tree_generator.h"
 #include "../include/population.h"
 #include "../include/feature_parser.h"
+#include "../include/arg_helper.h"
 
 typedef unsigned long long timestamp_t;
-static timestamp_t get_timestamp() {
+static timestamp_t getTimestamp() {
   struct timeval now;
   gettimeofday (&now, NULL);
 
   return now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
 }
 
-void test(FILE *logFile) {
+
+void compute() {
   int nbThreads = 15; // not including main thread
 
   int nbSamples = 108405;
@@ -42,16 +45,11 @@ void test(FILE *logFile) {
 
   int generation = 0;
 
-  timestamp_t start = get_timestamp();
-  timestamp_t end = get_timestamp();
+  timestamp_t start = getTimestamp();
+  timestamp_t end = getTimestamp();
   
   while (pop->results[0] > 0.0001) {
-    // clock_t start = clock();
     population_threadedContest(pop, featuresPtr, nbSamples, nbFeatures, nbThreads);
-    // population_contest(pop, featuresPtr, nbSamples, nbFeatures);
-    // clock_t end = clock();
-    // float seconds = (float)(end - start) / CLOCKS_PER_SEC;
-    // fprintf(stdout, "contest took %fs\n", seconds);
 
     population_orderByScore(pop);
 
@@ -60,13 +58,13 @@ void test(FILE *logFile) {
     population_mutate(pop, nbMutate, nbFeatures);
     
     if (generation % 1 == 0) {
-      end = get_timestamp();
+      end = getTimestamp();
       double seconds = (float)(end - start) / 1000000.0L;
       fprintf(stdout, "------------------------------------------------------------------------------------------------------\n");
       fprintf(stdout, "contest took %.5f s\n", seconds);
       fprintf(stdout, "result found after %i generations\n", generation);
       population_print(pop);
-      start = get_timestamp();
+      start = getTimestamp();
     }
     ++generation;
   }
@@ -78,33 +76,15 @@ void test(FILE *logFile) {
   population_print(pop);
 
   fclose(datasetFile);
-  
-
-  // t_node *root = tree_generate(21);
-  // t_node *copy = tree_generate(21);
-  // node_toSymbols(root, stdout);
-  // fprintf(stdout, "\n");
-  // node_toSymbols(copy, stdout);
-  // fprintf(stdout, "\n");
-  // t_node *child = tree_crossover(root, copy);
-  // fprintf(stdout, "\n");
-  // node_toSymbols(child, stdout);
-  // fprintf(stdout, "\n");
-  // node_toSymbols(root, logFile);
-  // node_getValue(root, features);
-  // // printf("Test result = %f\n", node_getValue(root, features));
-  // node_delete(&root);
-  // node_delete(&copy);
 }
 
 int main(int argc, char **argv) {
   srand(time(NULL));
-  // srand(23);
-  FILE *logFile = fopen("./debug.json", "w");
-  // for (i = 0; i < 100; ++i) {
-    test(logFile);
-    // fprintf(logFile, "\n");
-  // }
-  fclose(logFile);
+
+  t_config config;
+  if (arg_parse(&config, argc, argv) < 0)
+    return 0; // error while parsing args
+
+  compute();
   return 0;
 }
